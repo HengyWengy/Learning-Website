@@ -1,0 +1,198 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>LearnGate Student Portal</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="topbar">
+        <a class="brand" href="#gateView" aria-label="LearnGate home">
+          <span class="brand-mark">LG</span>
+          <span class="brand-copy">
+            <strong>LearnGate</strong>
+            <small>Student and Admin Access</small>
+          </span>
+        </a>
+
+        <div class="header-actions">
+          <span id="accessStatus" class="status-pill">Signed out</span>
+          <button id="lockButton" class="quiet-button" type="button" hidden>Portal</button>
+          <button id="adminLogoutButton" class="quiet-button" type="button" hidden>Logout</button>
+        </div>
+      </header>
+
+      <main>
+        <section id="gateView" class="gate-grid" aria-labelledby="gateTitle">
+          <div class="access-panel">
+            <p id="gateEyebrow" class="eyebrow">Choose access type</p>
+            <h1 id="gateTitle">Sign in to LearnGate</h1>
+            <p id="gateLead" class="lead">Use the same portal to continue as a student or open the private admin dashboard.</p>
+
+            <div class="role-tabs" role="tablist" aria-label="Access type">
+              <button id="studentModeButton" type="button" role="tab" aria-selected="true">Student</button>
+              <button id="adminModeButton" type="button" role="tab" aria-selected="false">Admin</button>
+            </div>
+
+            <div id="studentAccess" class="role-panel">
+              <form id="authForm" class="access-form auth-form">
+                <label for="usernameInput">Username</label>
+                <input id="usernameInput" class="wide-input" name="username" type="text" autocomplete="username" placeholder="student-name" required />
+
+                <label for="displayNameInput">Display name</label>
+                <input id="displayNameInput" class="wide-input" name="displayName" type="text" autocomplete="name" placeholder="Only needed for registration" />
+
+                <label for="passwordInput">Password</label>
+                <input id="passwordInput" class="wide-input" name="password" type="password" autocomplete="current-password" required />
+
+                <div class="auth-actions">
+                  <button type="submit" data-auth-action="login">Login</button>
+                  <button type="submit" data-auth-action="register">Register</button>
+                </div>
+                <p id="authMessage" class="form-message" role="alert" aria-live="polite"></p>
+              </form>
+
+              <div id="signedInCard" class="signed-in-card" hidden>
+                <div>
+                  <span>Signed in as</span>
+                  <strong id="signedInName">Student</strong>
+                </div>
+                <button id="logoutStudentButton" class="quiet-button" type="button">Logout</button>
+              </div>
+
+              <form id="entryForm" class="access-form" hidden>
+                <label for="entryCodeInput">Access code</label>
+                <div class="code-row">
+                  <input id="entryCodeInput" name="entryCodeInput" type="text" inputmode="text" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="Enter code" required />
+                  <button type="submit">Start</button>
+                </div>
+                <p id="entryMessage" class="form-message" role="alert" aria-live="polite"></p>
+              </form>
+            </div>
+
+            <div id="adminAccess" class="role-panel" hidden>
+              <form id="adminLoginForm" class="access-form">
+                <label for="adminPassword">Admin password</label>
+                <div class="code-row">
+                  <input id="adminPassword" name="adminPassword" type="password" autocomplete="current-password" required />
+                  <button type="submit">Open</button>
+                </div>
+                <p id="adminLoginMessage" class="form-message" role="alert" aria-live="polite"></p>
+              </form>
+            </div>
+
+            <dl class="access-stats" aria-label="Course summary">
+              <div><dt>Videos</dt><dd id="lessonCount">0</dd></div>
+              <div><dt>Progress</dt><dd>Saved</dd></div>
+              <div><dt>Codes</dt><dd>Private</dd></div>
+            </dl>
+          </div>
+
+          <aside class="preview-panel" aria-label="Account and lesson previews">
+            <div class="session-card">
+              <span>Your account</span>
+              <code id="participantCode">Not signed in</code>
+              <small>Progress is saved after login and can be continued later.</small>
+            </div>
+
+            <div class="preview-heading">
+              <span>Course path</span>
+              <strong>Video checkpoints</strong>
+            </div>
+            <div id="previewRail" class="preview-rail"></div>
+          </aside>
+        </section>
+
+        <section id="libraryView" class="library-layout" hidden>
+          <section class="player-area" aria-labelledby="currentTitle">
+            <div id="playerShell" class="player-shell">
+              <video id="videoPlayer" title="Learning video player" controls controlsList="nodownload noplaybackrate" disablepictureinpicture preload="metadata" oncontextmenu="return false"></video>
+            </div>
+            <section id="materialPanel" class="material-panel" hidden></section>
+
+            <div class="lesson-details">
+              <div>
+                <p id="currentTopic" class="eyebrow"></p>
+                <h1 id="currentTitle"></h1>
+                <p id="currentDescription"></p>
+              </div>
+            </div>
+
+            <section class="checkpoint-card" aria-labelledby="quizHeading">
+              <div class="checkpoint-heading">
+                <div>
+                  <p class="eyebrow">Checkpoint</p>
+                  <h2 id="quizHeading">Answer to request the next code</h2>
+                </div>
+                <span id="checkpointState" class="status-pill compact">Question</span>
+              </div>
+
+              <form id="quizForm" class="quiz-form">
+                <div id="quizQuestions" class="quiz-questions"></div>
+                <button id="submitAnswerButton" type="submit">Submit answer</button>
+              </form>
+
+              <form id="nextCodeForm" class="next-code-form" hidden>
+                <label for="nextCodeInput">Next video code</label>
+                <div class="code-row">
+                  <input id="nextCodeInput" name="nextCodeInput" type="text" inputmode="text" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="Enter next code" />
+                  <button type="submit">Continue</button>
+                </div>
+                <p id="nextCodeHint" class="code-hint"></p>
+              </form>
+
+              <p id="quizMessage" class="form-message" role="alert" aria-live="polite"></p>
+            </section>
+          </section>
+
+          <aside class="library-panel" aria-label="Course progress">
+            <div class="access-card">
+              <span>Session active</span>
+              <strong id="accessName">Learning path</strong>
+              <small id="progressText">Video 1 of 3</small>
+            </div>
+            <div class="progress-track" aria-label="Progress"><span id="progressFill"></span></div>
+            <div id="lessonList" class="lesson-list"></div>
+          </aside>
+        </section>
+
+        <section id="adminView" class="admin-layout" hidden>
+          <section class="admin-hero">
+            <div class="access-card admin-code-card">
+              <span>Current class entry code</span>
+              <strong id="entryCodeDisplay">Loading</strong>
+              <small>Give this code to students who should enter the course.</small>
+            </div>
+
+            <div class="admin-actions">
+              <button id="refreshButton" class="quiet-button" type="button">Refresh</button>
+              <button id="regenerateEntryButton" class="quiet-button danger-button" type="button">New entry code</button>
+            </div>
+          </section>
+
+          <section class="admin-grid">
+            <article class="admin-panel">
+              <div class="preview-heading">
+                <span>Participants</span>
+                <strong id="participantCount">0 active</strong>
+              </div>
+              <div id="participantList" class="participant-list"></div>
+            </article>
+
+            <article class="admin-panel">
+              <div class="preview-heading">
+                <span>Course</span>
+                <strong id="courseCount">0 videos</strong>
+              </div>
+              <div id="courseList" class="lesson-list"></div>
+            </article>
+          </section>
+        </section>
+      </main>
+    </div>
+
+    <script src="script.js" defer></script>
+  </body>
+</html>
