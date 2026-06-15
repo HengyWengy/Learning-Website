@@ -1,308 +1,407 @@
 module.exports = [
   {
-    id: "mpos-walkthrough",
-    title: "MPOS 操作流程",
-    topic: "系统操作",
-    duration: "Local video",
+    id: "general-vs-life",
+    title: "General vs Life Insurance",
+    topic: "Insurance basics",
+    duration: "8 min video",
     hasVideo: true,
-    mediaFile: "MPOS.mp4",
-    description: "学习 MPOS 从客户资料、VCA、Fact Find、Existing Policies 到 Full Quotation 与 Check Completeness 的基本提交流程。",
+    mediaFile: "general-vs-life.mp4",
+    description: "Compare the bottom-level logic, scope, contract period, claims behavior, and risk gap between general insurance and life insurance.",
     contentBlocks: [
       {
-        title: "学习重点",
+        title: "Learning points",
         bullets: [
-          "进入 MPOS 后先确认 Customer Management、Proposal Management 和 Resources 等主模块。",
-          "建立或搜索客户资料时，要准确填写称呼、姓名、证件类型、证件号码、国籍和地址等资料。",
-          "VCA 会确认客户残疾、收入资源、保险经验、语言偏好等适配问题。",
-          "Fact Find 会检查现有保单，再进入推荐产品和 Full Quotation。",
-          "完成报价后，需要用 Check Completeness 检查资料完整性，才继续后续提交。",
-        ],
-      },
+          "General insurance usually protects assets, property, accidents, travel, medical bills, and liability risks over shorter terms.",
+          "Life insurance protects a person's long-term health, life, income responsibility, and family financial continuity.",
+          "The lesson emphasizes matching the risk: small frequent losses need one type of planning, while life-changing events need another.",
+          "Refusing either layer can leave a gap: daily loss becomes cash-flow pressure, while severe life events can affect the whole family."
+        ]
+      }
     ],
     quiz: {
       questions: [
         {
-          question: "MPOS 首页主要让顾问进入哪些工作模块？",
-          options: ["客户管理、建议书管理和资源", "游戏中心、音乐播放器和相机", "银行转账、股票交易和邮箱", "只可以查看旧保单，不能建立新资料"],
-          answerIndex: 0,
+          question: "What is the main protection object of life insurance in this lesson?",
+          options: ["A person's life, health, income responsibility, and family continuity", "Only car repair cost after an accident", "Only house fire damage", "Only travel luggage claims"],
+          answerIndex: 0
         },
         {
-          question: "建立客户资料时，为什么证件类型和证件号码要准确？",
-          options: ["因为这些资料会影响客户身份识别和后续建议书资料", "因为系统只接受随便输入的测试资料", "因为证件资料不会被用到", "因为填写错误也不会影响提交"],
-          answerIndex: 0,
+          question: "General insurance is closest to which type of protection?",
+          options: ["Long-term family income replacement only", "Property, accident, travel, liability, and short-term loss protection", "A will-writing service", "Retirement account investment only"],
+          answerIndex: 1
         },
         {
-          question: "VCA 页面主要在确认什么？",
-          options: ["客户是否适合继续进行建议流程，例如残疾、财务资源、保险经验等", "客户是否要下载影片", "顾问是否已经退出系统", "客户手机有没有安装游戏"],
-          answerIndex: 0,
+          question: "Which statement best describes the contract-period difference shown in the comparison table?",
+          options: ["Both are always one-month contracts", "Life insurance is usually longer-term, while general insurance is often renewed yearly or by trip/event", "General insurance is always lifelong", "Life insurance never needs underwriting"],
+          answerIndex: 1
         },
         {
-          question: "在 Existing Policies 画面，如果客户没有现有保单，应该怎样处理？",
-          options: ["勾选或确认没有现有保单，再继续流程", "随便新增一张不存在的保单", "关闭 MPOS 不继续", "把别人的保单填进去"],
-          answerIndex: 0,
+          question: "Why does the lesson call insurance a form of risk defense?",
+          options: ["Because it guarantees profit from every event", "Because it removes the chance of accidents happening", "Because it prepares funds before uncertain losses become a financial burden", "Because it replaces all savings and planning"],
+          answerIndex: 2
         },
         {
-          question: "Full Quotation 的主要用途是什么？",
-          options: ["选择产品/配套、保额、保费频率和附加利益来生成报价", "更改客户的银行密码", "删除所有客户资料", "下载公司内部文件"],
-          answerIndex: 0,
+          question: "If someone refuses general insurance, what kind of problem can appear?",
+          options: ["Daily smaller losses such as repairs, accidents, or travel claims may become immediate cash-flow pressure", "Their EPF account automatically closes", "They cannot buy life insurance later", "They no longer need emergency savings"],
+          answerIndex: 0
         },
         {
-          question: "Waiver 或 Payer Benefits 这类项目通常属于什么？",
-          options: ["附加利益或额外保障选项", "客户的证件号码", "顾问的登录密码", "系统语言设定"],
-          answerIndex: 0,
+          question: "If someone refuses life insurance, what is the larger gap highlighted by the lesson?",
+          options: ["The family may lose long-term income support after death, disability, or serious illness", "They cannot claim for a broken phone", "They lose access to online banking", "They must renew car insurance twice per year"],
+          answerIndex: 0
         },
         {
-          question: "提交前系统提醒使用 Check Completeness，原因是什么？",
-          options: ["检查资料和建议流程是否完整，避免遗漏必要步骤", "让客户跳过所有问题", "把影片下载到电脑", "自动批准所有保单"],
-          answerIndex: 0,
-        },
-        {
-          question: "MPOS 流程中，Fact Find 的目的最接近哪一项？",
-          options: ["了解客户现有情况和需要，再推荐合适产品", "只用来装饰页面", "用来播放音乐", "用来替客户申请社交账号"],
-          answerIndex: 0,
-        },
+          question: "What is the best planning attitude after comparing both insurance types?",
+          options: ["Choose only the cheapest policy and ignore the risk type", "Use each insurance type for the risk it is designed to cover", "Buy only general insurance because life events are impossible", "Buy only life insurance because daily losses never happen"],
+          answerIndex: 1
+        }
       ],
-      success: "正确。你已经掌握 MPOS 从客户资料到报价提交的核心流程。",
-    },
+      success: "Correct. You can now explain the difference between general insurance and life insurance."
+    }
   },
   {
-    id: "will-planning",
-    title: "遗嘱与遗产规划",
-    topic: "遗产规划",
-    duration: "Reading",
-    hasVideo: false,
-    description: "根据 Will.pptx 的遗产规划蓝图，学习遗嘱的意义、关键人物、遗产执行流程和常见法律瓶颈。",
+    id: "critical-illness",
+    title: "Critical Illness Insurance",
+    topic: "Protection planning",
+    duration: "19 min video",
+    hasVideo: true,
+    mediaFile: "critical-illness.mp4",
+    description: "Understand why critical illness protection is different from a medical card, how illness can affect income, and why claim amount and age data matter.",
     contentBlocks: [
       {
-        title: "学习重点",
+        title: "Learning points",
         bullets: [
-          "遗嘱是给家人的法律清单和资产分配说明书，不只是最后一封信。",
-          "有遗嘱 Testate 可以按个人意愿分配；没有遗嘱 Intestate 则会依法律程序处理，时间和成本通常更高。",
-          "五个重点人物包括立遗嘱人、执行人、见证人、监护人和受益人。",
-          "执行人负责申请 Grant of Probate、整理资产、处理税务和债务，并按遗嘱分配资产。",
-          "遗产执行大致分为文件准备、法律清算和最终分配三个阶段。",
-        ],
-      },
+          "A medical card focuses on hospital and treatment bills, while critical illness insurance provides cash after diagnosis when conditions are met.",
+          "The lesson frames illness as more than treatment cost: recovery time, family commitments, and income interruption also matter.",
+          "Budget examples show that monthly expenses can become large yearly pressure when illness prevents work.",
+          "Claim examples and age groups are used to show why serious illness planning should start before the risk feels urgent."
+        ]
+      }
     ],
     quiz: {
       questions: [
         {
-          question: "遗嘱最核心的作用是什么？",
-          options: ["清楚表达资产分配和家人安排的法律意愿", "让资产自动消失", "只用来记录生日愿望", "只适合没有家庭的人"],
-          answerIndex: 0,
+          question: "In the video, what is the main difference between a medical card and critical illness insurance?",
+          options: ["A medical card pays only after death, while CI pays for car damage", "A medical card helps hospital bills; CI insurance provides cash support after covered serious illness diagnosis", "They are exactly the same product", "CI insurance can only be used for travel claims"],
+          answerIndex: 1
         },
         {
-          question: "有遗嘱 Testate 与无遗嘱 Intestate 的主要差别是什么？",
-          options: ["有遗嘱按个人意愿处理；无遗嘱会依法律程序和默认规则处理", "无遗嘱一定比有遗嘱更快", "有遗嘱就不需要执行人", "两者完全没有差别"],
-          answerIndex: 0,
+          question: "Why does the video ask whether a patient stays in hospital longer or rests at home longer?",
+          options: ["To show that recovery time and income interruption can be as important as the hospital bill", "To choose a hospital room color", "To avoid all insurance planning", "To prove that medical bills are always zero"],
+          answerIndex: 0
         },
         {
-          question: "遗产规划中的 Testator 是谁？",
-          options: ["立遗嘱人，也就是作出遗嘱决定的人", "银行职员", "保险公司", "所有受益人的律师"],
-          answerIndex: 0,
+          question: "Which monthly-cost example is used to show the pressure of illness?",
+          options: ["Only RM50 per year with no other commitments", "A list of items like housing, car, food, insurance, and family support becoming thousands per month", "A single parking ticket", "Only the price of one medicine bottle"],
+          answerIndex: 1
         },
         {
-          question: "Executor 执行人的主要任务是什么？",
-          options: ["处理遗产执行、申请法律文件、清算债务并分配资产", "只负责签一张见证表格", "决定所有受益人必须放弃继承", "负责替客户购买汽车保险"],
-          answerIndex: 0,
+          question: "What does the claim-data section try to make the learner notice?",
+          options: ["Critical illness claims happen only after age 90", "Claim amount, diagnosis type, and age group are useful when planning coverage", "Claims data should never be compared", "Only one disease exists"],
+          answerIndex: 1
         },
         {
-          question: "见证人 Witness 在遗嘱中为什么重要？",
-          options: ["他们证明遗嘱签署过程合法有效", "他们自动获得全部遗产", "他们可以随意更改遗嘱内容", "他们负责缴付所有债务"],
-          answerIndex: 0,
+          question: "Why is it risky to wait until health problems appear before applying?",
+          options: ["The application may be harder, exclusions may apply, or coverage may not be available at the same terms", "Premiums always become free after diagnosis", "The insurer stops asking health questions", "Waiting makes all illnesses disappear"],
+          answerIndex: 0
         },
         {
-          question: "Guardian 监护人主要适用于什么情况？",
-          options: ["当父母不在时，安排未成年子女的照顾者", "管理公司销售目标", "替执行人申请贷款", "替见证人领取佣金"],
-          answerIndex: 0,
+          question: "Which need is CI insurance most directly designed to support?",
+          options: ["Replacing every hospital invoice only", "Cash flow for living expenses, recovery period, debts, and family responsibilities", "Downloading a medical report", "Renewing road tax"],
+          answerIndex: 1
         },
         {
-          question: "遗产执行中的清算瓶颈通常包括什么？",
-          options: ["整理资产、关闭税务、偿还债务", "下载影片和PDF", "更换手机号码", "重新设计公司标志"],
-          answerIndex: 0,
-        },
-        {
-          question: "良好的遗产规划最终希望达到什么？",
-          options: ["清晰意愿、正确人选、可预测流程，给家人安心", "让家人完全不知道资产在哪里", "故意制造更多争议", "让所有资产长期冻结"],
-          answerIndex: 0,
-        },
+          question: "What is a reasonable conclusion from the video?",
+          options: ["Medical card and CI planning can complement each other", "Only medical card matters; income loss never matters", "CI insurance is useful only for people with no family", "Claims tables are unrelated to planning"],
+          answerIndex: 0
+        }
       ],
-      success: "正确。你已经掌握遗嘱规划的关键人物与执行流程。",
-    },
+      success: "Correct. You can now explain why critical illness cover is separate from hospital-bill protection."
+    }
   },
   {
-    id: "kwsp-epf-tax",
-    title: "KWSP/EPF 与扣税重点",
-    topic: "税务与退休",
-    duration: "Reading",
-    hasVideo: false,
-    description: "整理 KWSP/EPF 华文资料与 LHDN 截图重点，理解 EPF、自愿缴纳、寿险/家庭 Takaful 和相关税务减免限额。",
+    id: "director-epf",
+    title: "Director EPF",
+    topic: "EPF strategy",
+    duration: "28 min video",
+    hasVideo: true,
+    mediaFile: "director-epf.mp4",
+    description: "Learn the Director EPF concept, the three-account EPF structure, company/director contribution logic, tax-relief planning, and liquidity positioning.",
     contentBlocks: [
       {
-        title: "学习重点",
+        title: "Learning points",
         bullets: [
-          "LHDN 项目 17 是人寿保险和公积金，整体显示 RM7,000 限额。",
-          "认可计划的强制性供款或自愿向 EPF 缴纳的供款，截图标示限额为 RM4,000。",
-          "人寿保险保费、家庭 Takaful 缴款或额外自愿向 EPF 缴纳的供款，截图标示限额为 RM3,000。",
-          "私人退休计划和递延年金属于另一个 RM3,000 限额项目。",
-          "教育和医疗保险在截图中属于 RM4,000 限额；SOCSO/EIS 项目显示 RM350 限额。",
-        ],
-      },
+          "The video explains the 2024 EPF three-account structure: retirement, well-being, and flexible liquidity layers.",
+          "Director EPF is positioned as a defensive and offensive planning tool for directors and business owners.",
+          "Examples compare normal EPF contribution, director EPF contribution, personal tax relief, and company-level deduction logic.",
+          "The goal is to balance retirement discipline, tax efficiency, business cash flow, and accessible liquidity."
+        ]
+      }
     ],
     quiz: {
       questions: [
         {
-          question: "LHDN 截图中，人寿保险和公积金项目整体显示的扣税限额是多少？",
-          options: ["RM7,000", "RM350", "RM100,000", "没有任何限额"],
-          answerIndex: 0,
+          question: "What are the three EPF account layers shown in the lesson?",
+          options: ["Akaun Persaraan, Akaun Sejahtera, and Akaun Fleksibel", "Savings, current, and fixed deposit accounts", "Medical, travel, and motor accounts", "Personal, family, and company bank cards"],
+          answerIndex: 0
         },
         {
-          question: "认可计划的强制性供款或向 EPF 缴纳的自愿供款，在截图中标示的限额是多少？",
-          options: ["RM4,000", "RM3,000", "RM350", "RM10,000"],
-          answerIndex: 0,
+          question: "What is the main idea of Director EPF in the video?",
+          options: ["To remove retirement planning from the business owner", "To combine retirement funding, business planning, and tax-aware contribution strategy", "To replace all insurance policies", "To stop directors from contributing to EPF"],
+          answerIndex: 1
         },
         {
-          question: "人寿保险保费、家庭 Takaful 或额外自愿 EPF 供款，在截图中标示的限额是多少？",
-          options: ["RM3,000", "RM7,000", "RM350", "RM500"],
-          answerIndex: 0,
+          question: "In the strategy diagram, Director EPF has both defensive and offensive roles. What does that mean?",
+          options: ["It protects future retirement funds while also helping structure business-owner cash flow and planning", "It is only for sports teams", "It forces all money into a single locked account", "It is only a one-time bank transfer"],
+          answerIndex: 0
         },
         {
-          question: "私人退休计划和递延年金属于哪个限额项目？",
-          options: ["RM3,000 限量", "RM7,000 无限量", "RM350 限量", "完全不能扣税"],
-          answerIndex: 0,
+          question: "Why does the video discuss personal tax relief together with EPF contribution?",
+          options: ["Because contribution planning can affect personal relief and tax efficiency", "Because tax relief is unrelated to EPF", "Because all tax relief is unlimited", "Because directors cannot claim any relief"],
+          answerIndex: 0
         },
         {
-          question: "教育和医疗保险在截图中对应的限额是多少？",
-          options: ["RM4,000", "RM3,000", "RM350", "RM7,000"],
-          answerIndex: 0,
+          question: "Why is company-level deduction discussed?",
+          options: ["Director EPF may be planned through company contribution treatment, so business accounting impact matters", "Because companies never record payroll cost", "Because personal relief and company deduction are always the same thing", "Because it is only a personal cash gift"],
+          answerIndex: 0
         },
         {
-          question: "SOCSO/EIS 缴款项目在截图中显示的限额是多少？",
-          options: ["RM350", "RM4,000", "RM3,000", "RM7,000"],
-          answerIndex: 0,
+          question: "What is the purpose of comparing EPF, Director EPF, liquidity, and tax effects on the whiteboard?",
+          options: ["To choose a random contribution with no planning", "To see how contribution amount, accessible funds, and tax position interact", "To avoid writing any numbers", "To replace statutory compliance"],
+          answerIndex: 1
         },
         {
-          question: "税务减免限额应该怎样理解？",
-          options: ["它是可申报减免的上限，不代表政府直接退还同等现金", "它代表每个人一定拿到全额现金", "它可以无限叠加不受限制", "它只适用于下载PDF的人"],
-          answerIndex: 0,
-        },
+          question: "Which client is most relevant for this lesson?",
+          options: ["A company director or business owner planning long-term funds and tax position", "A child applying for school admission", "A person buying only travel insurance", "Someone who never has income or business planning"],
+          answerIndex: 0
+        }
       ],
-      success: "正确。你已经掌握 EPF/寿险相关扣税限额的基本区分。",
-    },
+      success: "Correct. You can now describe the Director EPF planning logic."
+    }
   },
   {
-    id: "socso-sepcc-script",
-    title: "SOCSO/SEPCC 话术流程",
-    topic: "客户沟通",
-    duration: "Reading",
-    hasVideo: false,
-    description: "根据 SOCSO 话术图和 SMCC/SEPCC 资料，练习如何用顾问式对话解释 SOCSO 的政府保障、申请对象和常见拒绝处理。",
+    id: "mpos-flow",
+    title: "MPOS Operation Flow",
+    topic: "System operation",
+    duration: "15 min video",
+    hasVideo: true,
+    mediaFile: "mpos-new.mp4",
+    description: "Walk through MPOS customer fact find, dependants, insurance planning, quotation, proposal, and submission data entry.",
     contentBlocks: [
       {
-        title: "学习重点",
+        title: "Learning points",
         bullets: [
-          "开场先确认公司与负责人身份，再说明自己想了解为什么还没有申请 SOCSO。",
-          "客户说没兴趣时，不要硬推，先用福利和政府保障角度引导。",
-          "需要分清公司类型和对象，例如 Sdn Bhd、Enterprise、老板本人或员工。",
-          "当客户已有私人保险时，要说明 SOCSO 是政府福利/保障，和私人保险保障位置不同。",
-          "当客户不懂或犹豫时，先提供简短说明和后续资料，不要让对话变成争吵。",
-        ],
-      },
+          "The video shows MPOS customer details and phone entry before moving into customer fact find.",
+          "Customer Fact Find includes life assured details, ID information, mobile number, occupation, race, marital status, and nationality.",
+          "Dependants and planning sections help organize savings, retirement income, children's education, legacy, and insurance planning needs.",
+          "Full quotation and proposal screens require benefit selection, sum assured, premium frequency, suitability, and missing-field completion."
+        ]
+      }
     ],
     quiz: {
       questions: [
         {
-          question: "SOCSO 话术的开场应该先做什么？",
-          options: ["确认公司和负责人身份，再说明来意", "立刻要求客户付款", "直接批评客户没有保障", "先问客户要不要下载文件"],
-          answerIndex: 0,
+          question: "What information is entered in the customer details/fact-find flow?",
+          options: ["Only the agent's favorite color", "Name, ID type, ID number, mobile number, occupation, race, marital status, and nationality", "Only the branch address", "Only the video title"],
+          answerIndex: 1
         },
         {
-          question: "客户说“没有兴趣”时，较合适的回应是什么？",
-          options: ["先理解客户，再用政府福利和保障角度简短解释", "立刻挂电话", "强迫客户马上申请", "告诉客户私人保险全部没用"],
-          answerIndex: 0,
+          question: "Why does MPOS ask for dependant information?",
+          options: ["To understand family responsibility and planning needs", "To change the phone keyboard layout", "To delete the proposal", "To skip all fact-finding"],
+          answerIndex: 0
         },
         {
-          question: "为什么话术中要区分 Sdn Bhd、Enterprise、员工和老板？",
-          options: ["因为不同对象和公司形态会影响申请角度与责任说明", "因为只是为了拖延时间", "因为系统不能记录公司名字", "因为所有人答案都一样，不需要区分"],
-          answerIndex: 0,
+          question: "Which planning areas appear in the Customer Fact Find summary?",
+          options: ["Savings, retirement income, children's education, legacy, and insurance planning", "Only car color and parking location", "Only social media accounts", "Only food preference"],
+          answerIndex: 0
         },
         {
-          question: "如果老板说自己已有保险，顾问应强调什么？",
-          options: ["SOCSO 是政府保障/福利，和私人保险保障位置不同", "有私人保险就永远不需要任何政府保障", "SOCSO 只保障汽车", "私人保险和 SOCSO 是完全一样的东西"],
-          answerIndex: 0,
+          question: "What is the purpose of the Full Quotation screen?",
+          options: ["To select product benefits, sum assured, premium frequency, and generate the quotation", "To play music", "To remove all customer data", "To approve every application automatically"],
+          answerIndex: 0
         },
         {
-          question: "话术中提到客户“不懂”时，顾问较好的处理方式是什么？",
-          options: ["用简单例子解释，不强硬推销，并留下后续资料", "责怪客户不了解", "马上结束所有沟通", "改讲完全无关的产品"],
-          answerIndex: 0,
+          question: "What does the proposal PDF/table help the consultant review?",
+          options: ["The proposed coverage, premiums, charges, and projected values", "Only the device battery", "Only the student's quiz score", "Only weather information"],
+          answerIndex: 0
         },
         {
-          question: "SOCSO 沟通中常见的核心价值是什么？",
-          options: ["以低成本取得政府相关保障，减少意外/工作风险带来的负担", "保证客户投资一定赚钱", "替客户逃税", "替客户下载影片"],
-          answerIndex: 0,
+          question: "Why do highlighted missing fields appear near the end?",
+          options: ["MPOS is asking the user to complete required proposal information before submission", "The system is finished and needs nothing else", "The customer has already signed every document", "The video is asking for a game password"],
+          answerIndex: 0
         },
         {
-          question: "当客户担心已有公司保险或私人保险重复时，应怎样定位 SOCSO？",
-          options: ["作为不同位置的基本保障，不是简单替代私人保险", "完全没有任何作用", "只给没有工作的人使用", "只适合退休人士"],
-          answerIndex: 0,
-        },
+          question: "What is a good MPOS habit from this video?",
+          options: ["Check completeness and required fields before moving to final submission", "Skip fact find when busy", "Use random ID numbers", "Leave customer needs blank"],
+          answerIndex: 0
+        }
       ],
-      success: "正确。你已经掌握 SOCSO/SEPCC 沟通中的身份确认、异议处理与保障定位。",
-    },
+      success: "Correct. You can now follow the MPOS proposal flow."
+    }
   },
   {
-    id: "protection-map",
-    title: "保障架构速记",
-    topic: "保险架构",
-    duration: "Reading",
-    hasVideo: false,
-    description: "根据白板笔记，复习 Life、PA、CI 和 Medical Card 的保障定位：死亡/TPD、意外、严重疾病现金给付，以及住院医疗费用。",
+    id: "socso-script",
+    title: "SOCSO Conversation",
+    topic: "Client conversation",
+    duration: "4 min video",
+    hasVideo: true,
+    mediaFile: "socso-1.mp4",
+    description: "Practice a clear SOCSO conversation: identify the client situation, explain the government-benefit angle, handle objections, and offer follow-up information.",
     contentBlocks: [
       {
-        title: "学习重点",
+        title: "Learning points",
         bullets: [
-          "Life 人寿主要对应死亡、TPD，以及自杀等待期等基本规则。",
-          "PA 意外保障主要处理意外死亡、意外残疾比例和意外医疗。",
-          "CI 严重疾病围绕 Cancer、Stroke、Kidney Failure、Heart Attack 等重大疾病。",
-          "CI 通常根据医生医疗报告确认后，一次性赔付到银行账户，可用于生活费。",
-          "Medical Card 医疗卡主要处理住院医疗账单，通常是给医院/医疗费用使用。",
-        ],
-      },
+          "Start by confirming the company/person situation before explaining SOCSO.",
+          "SOCSO should be positioned as a government protection benefit, not as the same thing as private insurance.",
+          "If the client says they already have insurance, explain the difference instead of arguing.",
+          "The call should offer useful information and follow-up, not pressure the client."
+        ]
+      }
     ],
     quiz: {
       questions: [
         {
-          question: "白板中 Life 人寿保障主要关联什么？",
-          options: ["死亡、TPD 和相关等待期规则", "只保障汽车维修", "只保障旅游行李", "只负责下载PDF"],
-          answerIndex: 0,
+          question: "What should the consultant confirm at the start of a SOCSO conversation?",
+          options: ["Whether the company/person situation is relevant for SOCSO discussion", "The client's favorite movie", "The color of the office wall", "The consultant's lunch order"],
+          answerIndex: 0
         },
         {
-          question: "PA 意外保障的重点是什么？",
-          options: ["意外死亡、意外残疾比例和意外医疗", "癌症一次性赔付", "退休金扣税", "遗嘱执行"],
-          answerIndex: 0,
+          question: "How should SOCSO be positioned?",
+          options: ["As a government protection benefit with a different role from private insurance", "As exactly the same as a life insurance policy", "As a shopping voucher", "As something only banks can explain"],
+          answerIndex: 0
         },
         {
-          question: "CI 严重疾病保障通常围绕哪些风险？",
-          options: ["Cancer、Stroke、Kidney Failure、Heart Attack 等重大疾病", "手机遗失", "汽车刮花", "公司网站设计"],
-          answerIndex: 0,
+          question: "If a client says they already have insurance, what is the best response?",
+          options: ["Explain that SOCSO and private insurance protect in different ways", "End the call immediately with no explanation", "Tell them private insurance is useless", "Ask them to cancel all coverage"],
+          answerIndex: 0
         },
         {
-          question: "CI 赔付通常需要什么作为确认依据？",
-          options: ["医生/医疗报告提及符合保障的严重疾病", "客户口头说不舒服就一定赔", "只需要下载影片", "不需要任何文件"],
-          answerIndex: 0,
+          question: "What tone should the SOCSO conversation use?",
+          options: ["Helpful and informative", "Threatening and forceful", "Confusing on purpose", "Only joking with no explanation"],
+          answerIndex: 0
         },
         {
-          question: "Medical Card 医疗卡主要处理什么？",
-          options: ["住院和医疗账单", "遗产分配", "SOCSO 公司开场白", "汽车路税"],
-          answerIndex: 0,
+          question: "Why is follow-up important in the SOCSO script?",
+          options: ["The client may need time, documents, or a clearer explanation before deciding", "It guarantees every client signs instantly", "It replaces the need to understand the client", "It avoids all questions"],
+          answerIndex: 0
         },
         {
-          question: "为什么 CI 一次性赔付可以补上 Medical Card 以外的需要？",
-          options: ["因为它可用于康复期生活费、债务或收入中断的资金压力", "因为它只能付给医院不能使用", "因为它只保障普通感冒", "因为它不能进银行账户"],
-          answerIndex: 0,
-        },
+          question: "Which statement best matches the lesson's message?",
+          options: ["SOCSO can complement existing planning and should be explained clearly", "SOCSO should be hidden from the client", "SOCSO is only a product name with no purpose", "A consultant should never answer objections"],
+          answerIndex: 0
+        }
       ],
-      success: "正确。你已经掌握 Life、PA、CI 和 Medical Card 的定位差别。",
-    },
+      success: "Correct. You can now handle the basic SOCSO conversation."
+    }
   },
+  {
+    id: "family-insurance",
+    title: "Family Insurance Planning",
+    topic: "Family protection",
+    duration: "3 min video",
+    hasVideo: true,
+    mediaFile: "family-insurance-2.mp4",
+    description: "Review family insurance logic: death, total permanent disability, critical illness, medical cost, personal accident, and the role each layer plays.",
+    contentBlocks: [
+      {
+        title: "Learning points",
+        bullets: [
+          "Family protection starts from responsibilities: dependants, debts, living expenses, education, and recovery needs.",
+          "Life insurance handles death and total permanent disability income replacement.",
+          "Critical illness cover supports recovery-period cash flow after diagnosis.",
+          "Medical card and personal accident cover solve different problems and should not be treated as the same layer."
+        ]
+      }
+    ],
+    quiz: {
+      questions: [
+        {
+          question: "What is the starting point for family insurance planning?",
+          options: ["Family responsibilities such as dependants, debts, living expenses, and education needs", "Choosing the shortest product name", "Buying whatever has the lowest first premium only", "Ignoring all existing commitments"],
+          answerIndex: 0
+        },
+        {
+          question: "Which risk does life insurance mainly support for a family?",
+          options: ["Death or total permanent disability causing income loss", "Small scratches on a phone", "One restaurant bill", "A temporary password reset"],
+          answerIndex: 0
+        },
+        {
+          question: "What role does critical illness cover play?",
+          options: ["It provides cash support during serious illness recovery and income disruption", "It only pays the hospital directly for every bill", "It covers car windscreen damage", "It replaces the need for all family planning"],
+          answerIndex: 0
+        },
+        {
+          question: "Why is a medical card not the same as critical illness insurance?",
+          options: ["A medical card focuses on treatment bills, while CI focuses on cash support after covered diagnosis", "They use identical claim triggers for all situations", "A medical card pays only for retirement", "CI pays only for travel luggage"],
+          answerIndex: 0
+        },
+        {
+          question: "What is personal accident cover usually linked to?",
+          options: ["Accidental death, disability, or accident-related benefits", "Long-term retirement contribution", "Company tax filing only", "Will writing only"],
+          answerIndex: 0
+        },
+        {
+          question: "What is the best way to explain family insurance to a client?",
+          options: ["Separate each risk layer and match it to the family's real responsibility", "Use only technical product names without explanation", "Say every family needs the same amount", "Avoid discussing dependants and debts"],
+          answerIndex: 0
+        }
+      ],
+      success: "Correct. You can now explain the basic family protection layers."
+    }
+  },
+  {
+    id: "summary-reflection",
+    title: "Summary and Reflection",
+    topic: "Consultant mindset",
+    duration: "3 min video",
+    hasVideo: true,
+    mediaFile: "summary-3.mp4",
+    description: "Summarize the learning attitude: understand the need, explain the right layer, avoid hard-selling, and connect each tool back to the client's real situation.",
+    contentBlocks: [
+      {
+        title: "Learning points",
+        bullets: [
+          "Good planning starts from the client's situation before choosing products or tools.",
+          "A consultant should explain purpose, gap, and next step clearly.",
+          "Video lessons should be converted into practical client-language, not memorized word for word.",
+          "The final goal is better judgment: choose the right protection or planning solution for the right problem."
+        ]
+      }
+    ],
+    quiz: {
+      questions: [
+        {
+          question: "What should come before recommending a solution?",
+          options: ["Understanding the client's actual situation and need", "Choosing a product randomly", "Skipping questions to save time", "Talking only about price"],
+          answerIndex: 0
+        },
+        {
+          question: "What should a good consultant explain clearly?",
+          options: ["Purpose, gap, and next step", "Only the product code", "Only the commission", "Only unrelated stories"],
+          answerIndex: 0
+        },
+        {
+          question: "Why should the learner not memorize scripts blindly?",
+          options: ["Because client situations differ and the explanation must fit the need", "Because no client ever asks questions", "Because all products are identical", "Because planning has no logic"],
+          answerIndex: 0
+        },
+        {
+          question: "What is the best summary of the whole training direction?",
+          options: ["Match the correct planning layer to the correct client problem", "Sell one same product to everyone", "Avoid explaining risk gaps", "Focus only on the cheapest option"],
+          answerIndex: 0
+        },
+        {
+          question: "What kind of follow-up is most professional?",
+          options: ["A clear next step based on the client's concern or missing information", "Repeated pressure with no explanation", "Sending random files with no context", "Ignoring all questions"],
+          answerIndex: 0
+        },
+        {
+          question: "Which mindset should the learner keep after the videos?",
+          options: ["Be curious, structured, and client-focused", "Be rushed and unclear", "Avoid reviewing the lesson", "Assume every client is the same"],
+          answerIndex: 0
+        }
+      ],
+      success: "Correct. You can now summarize the training into client-focused action."
+    }
+  }
 ];
