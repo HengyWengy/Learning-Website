@@ -186,6 +186,15 @@
                 <span>Course</span>
                 <strong id="courseCount">0 videos</strong>
               </div>
+              <form id="mediaUploadForm" class="media-upload-form">
+                <label for="mediaFileSelect">Lesson video slot</label>
+                <select id="mediaFileSelect" class="wide-input" required></select>
+                <label for="mediaFileInput">MP4 file</label>
+                <input id="mediaFileInput" class="wide-input file-input" type="file" accept="video/mp4" required />
+                <button type="submit">Upload video</button>
+                <progress id="mediaUploadProgress" value="0" max="100"></progress>
+                <p id="mediaUploadMessage" class="form-message" role="alert" aria-live="polite"></p>
+              </form>
               <div id="courseList" class="lesson-list"></div>
             </article>
           </section>

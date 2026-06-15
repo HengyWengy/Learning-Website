@@ -7,8 +7,11 @@ const { DatabaseSync } = require("node:sqlite");
 const course = require("./course-data");
 
 const root = __dirname;
-const protectedMediaRoot = path.join(root, "protected_media");
-const dbPath = path.join(root, "learngate.db");
+const dataRoot = process.env.DATA_DIR ? path.resolve(process.env.DATA_DIR) : root;
+const protectedMediaRoot = process.env.MEDIA_DIR ? path.resolve(process.env.MEDIA_DIR) : path.join(root, "protected_media");
+fs.mkdirSync(dataRoot, { recursive: true });
+fs.mkdirSync(protectedMediaRoot, { recursive: true });
+const dbPath = path.join(dataRoot, "learngate.db");
 const db = new DatabaseSync(dbPath);
 const sessions = new Map();
 const SESSION_TTL_MS = 2 * 60 * 60 * 1000;
@@ -380,7 +383,7 @@ function buildAdminStatus() {
       lastLoginAt: student.lastLoginAt,
     };
   });
-  return { entryCode: classEntryCode, sessions: summaries, course: publicCourse() };
+  return { entryCode: classEntryCode, sessions: summaries, course: publicCourse(), media: mediaStatus() };
 }
 
 function sendJson(response, statusCode, payload) {
@@ -402,6 +405,24 @@ function readJson(request) {
       if (!body) { resolve({}); return; }
       try { resolve(JSON.parse(body)); } catch { reject(new Error("Request body must be valid JSON.")); }
     });
+    request.on("error", reject);
+  });
+}
+
+function readBuffer(request, maxBytes = 12 * 1024 * 1024) {
+  return new Promise((resolve, reject) => {
+    const chunks = [];
+    let size = 0;
+    request.on("data", (chunk) => {
+      size += chunk.length;
+      if (size > maxBytes) {
+        reject(new Error("Upload chunk is too large."));
+        request.destroy();
+        return;
+      }
+      chunks.push(chunk);
+    });
+    request.on("end", () => resolve(Buffer.concat(chunks)));
     request.on("error", reject);
   });
 }
@@ -460,12 +481,70 @@ function streamFile(request, response, file, contentType) {
   });
 }
 
+function expectedMediaFiles() {
+  return new Set(course.filter((lesson) => lesson.hasVideo && lesson.mediaFile).map((lesson) => lesson.mediaFile));
+}
+
+function mediaStatus() {
+  return course.filter((lesson) => lesson.hasVideo && lesson.mediaFile).map((lesson) => {
+    const file = path.resolve(protectedMediaRoot, lesson.mediaFile);
+    const insideMediaRoot = file.startsWith(protectedMediaRoot);
+    const stats = insideMediaRoot && fs.existsSync(file) ? fs.statSync(file) : null;
+    return {
+      lessonId: lesson.id,
+      title: lesson.title,
+      mediaFile: lesson.mediaFile,
+      exists: Boolean(stats?.isFile()),
+      size: stats?.isFile() ? stats.size : 0,
+    };
+  });
+}
+
+async function handleMediaChunkUpload(request, response) {
+  const mediaFile = path.basename(String(request.headers["x-media-file"] || ""));
+  const uploadId = String(request.headers["x-upload-id"] || "").replace(/[^a-zA-Z0-9_-]/g, "");
+  const chunkIndex = Number(request.headers["x-chunk-index"]);
+  const totalChunks = Number(request.headers["x-total-chunks"]);
+
+  if (!expectedMediaFiles().has(mediaFile)) {
+    sendJson(response, 400, { error: "Choose one of the expected lesson video filenames." });
+    return;
+  }
+  if (!uploadId || !Number.isInteger(chunkIndex) || !Number.isInteger(totalChunks) || chunkIndex < 0 || totalChunks < 1 || chunkIndex >= totalChunks) {
+    sendJson(response, 400, { error: "Invalid upload chunk metadata." });
+    return;
+  }
+
+  const chunk = await readBuffer(request);
+  const uploadDir = path.join(protectedMediaRoot, ".uploads");
+  fs.mkdirSync(uploadDir, { recursive: true });
+  const tempFile = path.join(uploadDir, `${uploadId}-${mediaFile}.part`);
+  fs.appendFileSync(tempFile, chunk);
+
+  if (chunkIndex === totalChunks - 1) {
+    const finalFile = path.resolve(protectedMediaRoot, mediaFile);
+    if (!finalFile.startsWith(protectedMediaRoot)) {
+      sendJson(response, 403, { error: "Invalid media path." });
+      return;
+    }
+    fs.renameSync(tempFile, finalFile);
+    sendJson(response, 200, { ok: true, complete: true, media: mediaStatus() });
+    return;
+  }
+
+  sendJson(response, 200, { ok: true, complete: false, nextChunk: chunkIndex + 1 });
+}
+
 async function handleAdminApi(request, response, pathname) {
   if (!pathname.startsWith("/api/admin/")) return false;
   try {
     requireAdmin(request);
     if (request.method === "GET" && pathname === "/api/admin/status") {
       sendJson(response, 200, buildAdminStatus());
+      return true;
+    }
+    if (request.method === "POST" && pathname === "/api/admin/media-chunk") {
+      await handleMediaChunkUpload(request, response);
       return true;
     }
     if (request.method === "POST" && pathname === "/api/admin/entry-code") {

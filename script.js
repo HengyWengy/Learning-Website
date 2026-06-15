@@ -70,6 +70,11 @@ const elements = {
   participantList: document.querySelector("#participantList"),
   courseCount: document.querySelector("#courseCount"),
   courseList: document.querySelector("#courseList"),
+  mediaUploadForm: document.querySelector("#mediaUploadForm"),
+  mediaFileSelect: document.querySelector("#mediaFileSelect"),
+  mediaFileInput: document.querySelector("#mediaFileInput"),
+  mediaUploadProgress: document.querySelector("#mediaUploadProgress"),
+  mediaUploadMessage: document.querySelector("#mediaUploadMessage"),
 };
 
 function normalizeCode(value) {
@@ -107,6 +112,18 @@ function setMode(mode) {
 function getPreviewMedia(lesson) {
   const label = lesson.hasVideo ? "Video lesson" : "Reading lesson";
   return `<div class="video-placeholder" aria-hidden="true"><span>${label}</span></div>`;
+}
+
+function formatBytes(bytes) {
+  if (!bytes) return "Missing";
+  const units = ["B", "KB", "MB", "GB"];
+  let value = bytes;
+  let unitIndex = 0;
+  while (value >= 1024 && unitIndex < units.length - 1) {
+    value /= 1024;
+    unitIndex += 1;
+  }
+  return `${value.toFixed(unitIndex ? 1 : 0)} ${units[unitIndex]}`;
 }
 
 function clearVideoPlayer() {
@@ -333,6 +350,7 @@ function showAdminDashboard() {
 
 function renderAdminStatus() {
   const status = state.adminStatus;
+  const mediaByLesson = new Map((status.media || []).map((item) => [item.lessonId, item]));
   elements.entryCodeDisplay.textContent = status.entryCode;
   elements.participantCount.textContent = `${status.sessions.length} active`;
   elements.courseCount.textContent = `${status.course.length} videos`;
@@ -360,19 +378,69 @@ function renderAdminStatus() {
       })
       .join("") || `<p class="empty-state">No student sessions yet.</p>`;
 
+  elements.mediaFileSelect.innerHTML = (status.media || [])
+    .map((item) => `<option value="${item.mediaFile}">${item.exists ? "Uploaded" : "Missing"} - ${item.title} (${item.mediaFile})</option>`)
+    .join("");
+
   elements.courseList.innerHTML = status.course
     .map(
-      (lesson, index) => `
+      (lesson, index) => {
+        const media = mediaByLesson.get(lesson.id);
+        const mediaLabel = media ? `${media.exists ? "Uploaded" : "Missing"} - ${formatBytes(media.size)}` : "No video file expected";
+        return `
         <article class="lesson-card admin-lesson-card">
           ${getPreviewMedia(lesson)}
           <span>
             <h2>${index + 1}. ${lesson.title}</h2>
-            <p>${lesson.topic} - ${lesson.duration}</p>
+            <p>${lesson.topic} - ${lesson.duration} - ${mediaLabel}</p>
           </span>
         </article>
-      `,
+      `;
+      },
     )
     .join("");
+}
+
+async function uploadMediaFile() {
+  const mediaFile = elements.mediaFileSelect.value;
+  const file = elements.mediaFileInput.files[0];
+  if (!mediaFile || !file) {
+    setMessage(elements.mediaUploadMessage, "Choose a lesson slot and an MP4 file first.");
+    return;
+  }
+  if (!file.name.toLowerCase().endsWith(".mp4")) {
+    setMessage(elements.mediaUploadMessage, "Please choose an MP4 file.");
+    return;
+  }
+
+  const chunkSize = 8 * 1024 * 1024;
+  const totalChunks = Math.ceil(file.size / chunkSize);
+  const uploadId = `${Date.now()}-${Math.random().toString(16).slice(2)}`;
+  elements.mediaUploadProgress.value = 0;
+  setMessage(elements.mediaUploadMessage, `Uploading ${file.name} in ${totalChunks} chunks...`, "success");
+
+  for (let chunkIndex = 0; chunkIndex < totalChunks; chunkIndex += 1) {
+    const start = chunkIndex * chunkSize;
+    const chunk = file.slice(start, Math.min(start + chunkSize, file.size));
+    const response = await fetch("/api/admin/media-chunk", {
+      method: "POST",
+      headers: {
+        "X-Admin-Password": state.adminPassword,
+        "X-Media-File": mediaFile,
+        "X-Upload-Id": uploadId,
+        "X-Chunk-Index": String(chunkIndex),
+        "X-Total-Chunks": String(totalChunks),
+      },
+      body: chunk,
+    });
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok) throw new Error(data.error || "Video upload failed.");
+    elements.mediaUploadProgress.value = Math.round(((chunkIndex + 1) / totalChunks) * 100);
+  }
+
+  elements.mediaFileInput.value = "";
+  setMessage(elements.mediaUploadMessage, `Uploaded ${mediaFile}.`, "success");
+  await loadAdminStatus();
 }
 
 async function loadAdminStatus() {
@@ -550,6 +618,15 @@ elements.regenerateEntryButton.addEventListener("click", async () => {
     renderAdminStatus();
   } catch (error) {
     setMessage(elements.adminLoginMessage, error.message);
+  }
+});
+
+elements.mediaUploadForm.addEventListener("submit", async (event) => {
+  event.preventDefault();
+  try {
+    await uploadMediaFile();
+  } catch (error) {
+    setMessage(elements.mediaUploadMessage, error.message);
   }
 });
 
