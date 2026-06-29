@@ -1,0 +1,13 @@
+{
+  "name": "learngate-portal",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Code-gated LearnGate student and admin portal.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

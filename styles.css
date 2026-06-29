@@ -773,6 +773,40 @@ button.lesson-card:not(:disabled):hover,
   padding: 18px;
 }
 
+.media-upload-form {
+  display: grid;
+  gap: 10px;
+  margin-top: 16px;
+  margin-bottom: 18px;
+}
+
+.media-upload-form label {
+  color: var(--ink);
+  font-size: 0.78rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.media-upload-form button {
+  min-height: 46px;
+  border: 0;
+  border-radius: 8px;
+  background: var(--teal);
+  color: #fff;
+  cursor: pointer;
+  font-weight: 800;
+}
+
+.media-upload-form progress {
+  width: 100%;
+  height: 12px;
+  accent-color: var(--teal);
+}
+
+.file-input {
+  padding-top: 12px;
+}
+
 .participant-list {
   display: grid;
   gap: 12px;

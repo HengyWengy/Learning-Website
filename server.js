@@ -3,7 +3,6 @@ const fs = require("fs");
 const http = require("http");
 const os = require("os");
 const path = require("path");
-const { DatabaseSync } = require("node:sqlite");
 const course = require("./course-data");
 
 const root = __dirname;
@@ -11,8 +10,8 @@ const dataRoot = process.env.DATA_DIR ? path.resolve(process.env.DATA_DIR) : roo
 const protectedMediaRoot = process.env.MEDIA_DIR ? path.resolve(process.env.MEDIA_DIR) : path.join(root, "protected_media");
 fs.mkdirSync(dataRoot, { recursive: true });
 fs.mkdirSync(protectedMediaRoot, { recursive: true });
-const dbPath = path.join(dataRoot, "learngate.db");
-const db = new DatabaseSync(dbPath);
+const dbPath = path.join(dataRoot, "learngate-data.json");
+const store = loadStore();
 const sessions = new Map();
 const SESSION_TTL_MS = 2 * 60 * 60 * 1000;
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "teacher123";
@@ -44,74 +43,57 @@ function publicQuestions(lesson) {
   return lesson.quiz.questions.map(({ question, options }) => ({ question, options }));
 }
 
-function initializeDatabase() {
-  db.exec(`
-    PRAGMA journal_mode = WAL;
-    PRAGMA foreign_keys = ON;
-
-    CREATE TABLE IF NOT EXISTS students (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      username TEXT NOT NULL UNIQUE,
-      password_hash TEXT NOT NULL,
-      display_name TEXT NOT NULL,
-      created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
-      last_login_at TEXT
-    );
-
-    CREATE TABLE IF NOT EXISTS course_progress (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      student_id INTEGER NOT NULL UNIQUE,
-      started INTEGER NOT NULL DEFAULT 0,
-      active_lesson_index INTEGER NOT NULL DEFAULT 0,
-      unlocked_lesson_index INTEGER NOT NULL DEFAULT 0,
-      completed_lesson_ids TEXT NOT NULL DEFAULT '[]',
-      course_complete INTEGER NOT NULL DEFAULT 0,
-      updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
-      FOREIGN KEY (student_id) REFERENCES students(id) ON DELETE CASCADE
-    );
-
-    CREATE TABLE IF NOT EXISTS class_codes (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      code TEXT NOT NULL UNIQUE,
-      code_type TEXT NOT NULL CHECK (code_type IN ('entry', 'next')),
-      student_id INTEGER,
-      lesson_index INTEGER,
-      used_at TEXT,
-      created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
-      expires_at TEXT,
-      FOREIGN KEY (student_id) REFERENCES students(id) ON DELETE CASCADE
-    );
-
-    CREATE TABLE IF NOT EXISTS quiz_attempts (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      student_id INTEGER NOT NULL,
-      lesson_id TEXT NOT NULL,
-      answer_index INTEGER NOT NULL,
-      correct INTEGER NOT NULL CHECK (correct IN (0, 1)),
-      attempted_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
-      FOREIGN KEY (student_id) REFERENCES students(id) ON DELETE CASCADE
-    );
-
-    CREATE INDEX IF NOT EXISTS idx_quiz_attempts_student_id ON quiz_attempts(student_id);
-    CREATE INDEX IF NOT EXISTS idx_class_codes_student_id ON class_codes(student_id);
-    CREATE INDEX IF NOT EXISTS idx_class_codes_code_type ON class_codes(code_type);
-  `);
-
-  ensureColumn("course_progress", "started", "started INTEGER NOT NULL DEFAULT 0");
+function createEmptyStore() {
+  return {
+    students: [],
+    courseProgress: [],
+    classCodes: [],
+    quizAttempts: [],
+    counters: { students: 1, courseProgress: 1, classCodes: 1, quizAttempts: 1 },
+  };
 }
 
-function ensureColumn(tableName, columnName, definition) {
-  const columns = db.prepare(`PRAGMA table_info(${tableName})`).all();
-  if (!columns.some((column) => column.name === columnName)) {
-    db.exec(`ALTER TABLE ${tableName} ADD COLUMN ${definition}`);
+function loadStore() {
+  if (!fs.existsSync(dbPath)) return createEmptyStore();
+  try {
+    const loaded = JSON.parse(fs.readFileSync(dbPath, "utf8"));
+    const empty = createEmptyStore();
+    return {
+      ...empty,
+      ...loaded,
+      counters: { ...empty.counters, ...(loaded.counters || {}) },
+    };
+  } catch {
+    return createEmptyStore();
   }
 }
 
+function saveStore() {
+  const tempPath = `${dbPath}.tmp`;
+  fs.writeFileSync(tempPath, JSON.stringify(store, null, 2));
+  fs.renameSync(tempPath, dbPath);
+}
+
+function nextId(collectionName) {
+  const id = store.counters[collectionName] || 1;
+  store.counters[collectionName] = id + 1;
+  return id;
+}
+
+function nowIso() {
+  return new Date().toISOString();
+}
+
+function initializeDatabase() {
+  saveStore();
+}
+
 function getCurrentEntryCode() {
-  const row = db.prepare("SELECT code FROM class_codes WHERE code_type = 'entry' ORDER BY id DESC LIMIT 1").get();
+  const row = [...store.classCodes].filter((code) => code.codeType === "entry").sort((a, b) => b.id - a.id)[0];
   if (row) return row.code;
   const code = createCode("LG");
-  db.prepare("INSERT INTO class_codes (code, code_type) VALUES (?, 'entry')").run(code);
+  store.classCodes.push({ id: nextId("classCodes"), code, codeType: "entry", studentId: null, lessonIndex: null, usedAt: null, createdAt: nowIso(), expiresAt: null });
+  saveStore();
   return code;
 }
 
@@ -152,26 +134,31 @@ function createStudent({ username, password, displayName }) {
   const cleanUsername = normalizeUsername(username);
   validateCredentials(cleanUsername, password);
   const cleanDisplayName = String(displayName || cleanUsername).trim().slice(0, 60) || cleanUsername;
-  try {
-    const result = db.prepare("INSERT INTO students (username, password_hash, display_name) VALUES (?, ?, ?)").run(cleanUsername, hashPassword(password), cleanDisplayName);
-    ensureProgress(result.lastInsertRowid);
-    return getStudentById(result.lastInsertRowid);
-  } catch (error) {
-    if (String(error.message).includes("UNIQUE")) {
-      const duplicate = new Error("That username is already taken.");
-      duplicate.statusCode = 409;
-      throw duplicate;
-    }
-    throw error;
+  if (store.students.some((student) => student.username === cleanUsername)) {
+    const duplicate = new Error("That username is already taken.");
+    duplicate.statusCode = 409;
+    throw duplicate;
   }
+  const student = {
+    id: nextId("students"),
+    username: cleanUsername,
+    passwordHash: hashPassword(password),
+    displayName: cleanDisplayName,
+    createdAt: nowIso(),
+    lastLoginAt: null,
+  };
+  store.students.push(student);
+  saveStore();
+  ensureProgress(student.id);
+  return getStudentById(student.id);
 }
 
 function getStudentById(studentId) {
-  return db.prepare("SELECT id, username, display_name AS displayName, password_hash AS passwordHash FROM students WHERE id = ?").get(studentId);
+  return store.students.find((student) => student.id === Number(studentId)) || null;
 }
 
 function getStudentByUsername(username) {
-  return db.prepare("SELECT id, username, display_name AS displayName, password_hash AS passwordHash FROM students WHERE username = ?").get(normalizeUsername(username));
+  return store.students.find((student) => student.username === normalizeUsername(username)) || null;
 }
 
 function publicStudent(student) {
@@ -185,7 +172,8 @@ function loginStudent(username, password) {
     error.statusCode = 401;
     throw error;
   }
-  db.prepare("UPDATE students SET last_login_at = CURRENT_TIMESTAMP WHERE id = ?").run(student.id);
+  student.lastLoginAt = nowIso();
+  saveStore();
   ensureProgress(student.id);
   return student;
 }
@@ -229,7 +217,18 @@ function requireSession(payload) {
 }
 
 function ensureProgress(studentId) {
-  db.prepare("INSERT OR IGNORE INTO course_progress (student_id) VALUES (?)").run(studentId);
+  if (store.courseProgress.some((progress) => progress.studentId === Number(studentId))) return;
+  store.courseProgress.push({
+    id: nextId("courseProgress"),
+    studentId: Number(studentId),
+    started: 0,
+    activeIndex: 0,
+    unlockedIndex: 0,
+    completedLessonIds: "[]",
+    courseComplete: 0,
+    updatedAt: nowIso(),
+  });
+  saveStore();
 }
 
 function parseCompletedIds(value) {
@@ -238,7 +237,7 @@ function parseCompletedIds(value) {
 
 function getProgress(studentId) {
   ensureProgress(studentId);
-  const row = db.prepare("SELECT started, active_lesson_index AS activeIndex, unlocked_lesson_index AS unlockedIndex, completed_lesson_ids AS completedLessonIds, course_complete AS courseComplete FROM course_progress WHERE student_id = ?").get(studentId);
+  const row = store.courseProgress.find((progress) => progress.studentId === Number(studentId));
   return {
     started: Boolean(row.started),
     activeIndex: Math.min(Math.max(Number(row.activeIndex) || 0, 0), course.length - 1),
@@ -249,14 +248,15 @@ function getProgress(studentId) {
 }
 
 function saveProgress(studentId, progress) {
-  db.prepare("UPDATE course_progress SET started = ?, active_lesson_index = ?, unlocked_lesson_index = ?, completed_lesson_ids = ?, course_complete = ?, updated_at = CURRENT_TIMESTAMP WHERE student_id = ?").run(
-    progress.started ? 1 : 0,
-    progress.activeIndex,
-    progress.unlockedIndex,
-    JSON.stringify([...progress.completedIds]),
-    progress.courseComplete ? 1 : 0,
-    studentId,
-  );
+  ensureProgress(studentId);
+  const row = store.courseProgress.find((item) => item.studentId === Number(studentId));
+  row.started = progress.started ? 1 : 0;
+  row.activeIndex = progress.activeIndex;
+  row.unlockedIndex = progress.unlockedIndex;
+  row.completedLessonIds = JSON.stringify([...progress.completedIds]);
+  row.courseComplete = progress.courseComplete ? 1 : 0;
+  row.updatedAt = nowIso();
+  saveStore();
 }
 
 function requireStarted(progress) {
@@ -338,31 +338,49 @@ function buildPreviewState() {
 
 function getPendingNextCode(studentId, lessonIndex) {
   if (lessonIndex < 0 || lessonIndex >= course.length - 1) return null;
-  return db.prepare("SELECT id, code, lesson_index AS lessonIndex FROM class_codes WHERE code_type = 'next' AND student_id = ? AND lesson_index = ? AND used_at IS NULL ORDER BY id DESC LIMIT 1").get(studentId, lessonIndex);
+  return [...store.classCodes]
+    .filter((code) => code.codeType === "next" && code.studentId === Number(studentId) && code.lessonIndex === Number(lessonIndex) && !code.usedAt)
+    .sort((a, b) => b.id - a.id)[0] || null;
 }
 
 function getAnyPendingNextCode(studentId) {
-  return db.prepare("SELECT id, code, lesson_index AS lessonIndex FROM class_codes WHERE code_type = 'next' AND student_id = ? AND lesson_index >= 0 AND lesson_index < ? AND used_at IS NULL ORDER BY id DESC LIMIT 1").get(studentId, course.length - 1);
+  return [...store.classCodes]
+    .filter((code) => code.codeType === "next" && code.studentId === Number(studentId) && code.lessonIndex >= 0 && code.lessonIndex < course.length - 1 && !code.usedAt)
+    .sort((a, b) => b.id - a.id)[0] || null;
 }
 
 function ensurePendingNextCode(studentId, lessonIndex) {
   const existing = getPendingNextCode(studentId, lessonIndex);
   if (existing) return existing;
   const code = createCode("NEXT");
-  const result = db.prepare("INSERT INTO class_codes (code, code_type, student_id, lesson_index) VALUES (?, 'next', ?, ?)").run(code, studentId, lessonIndex);
-  return { id: result.lastInsertRowid, code, lessonIndex };
+  const pending = { id: nextId("classCodes"), code, codeType: "next", studentId: Number(studentId), lessonIndex: Number(lessonIndex), usedAt: null, createdAt: nowIso(), expiresAt: null };
+  store.classCodes.push(pending);
+  saveStore();
+  return pending;
 }
 
 function markCodeUsed(codeId) {
-  db.prepare("UPDATE class_codes SET used_at = CURRENT_TIMESTAMP WHERE id = ?").run(codeId);
+  const code = store.classCodes.find((item) => item.id === Number(codeId));
+  if (code) {
+    code.usedAt = nowIso();
+    saveStore();
+  }
 }
 
 function insertQuizAttempt(studentId, lessonId, answerIndex, correct) {
-  db.prepare("INSERT INTO quiz_attempts (student_id, lesson_id, answer_index, correct) VALUES (?, ?, ?, ?)").run(studentId, lessonId, answerIndex, correct ? 1 : 0);
+  store.quizAttempts.push({
+    id: nextId("quizAttempts"),
+    studentId: Number(studentId),
+    lessonId,
+    answerIndex,
+    correct: correct ? 1 : 0,
+    attemptedAt: nowIso(),
+  });
+  saveStore();
 }
 
 function buildAdminStatus() {
-  const students = db.prepare("SELECT id, username, display_name AS displayName, created_at AS createdAt, last_login_at AS lastLoginAt FROM students ORDER BY id DESC").all();
+  const students = [...store.students].sort((a, b) => b.id - a.id);
   const summaries = students.map((student) => {
     const progress = getProgress(student.id);
     const lesson = course[progress.activeIndex];
@@ -550,7 +568,8 @@ async function handleAdminApi(request, response, pathname) {
     if (request.method === "POST" && pathname === "/api/admin/entry-code") {
       await readJson(request);
       classEntryCode = createCode("LG");
-      db.prepare("INSERT INTO class_codes (code, code_type) VALUES (?, 'entry')").run(classEntryCode);
+      store.classCodes.push({ id: nextId("classCodes"), code: classEntryCode, codeType: "entry", studentId: null, lessonIndex: null, usedAt: null, createdAt: nowIso(), expiresAt: null });
+      saveStore();
       sendJson(response, 200, buildAdminStatus());
       return true;
     }
@@ -734,7 +753,7 @@ function serveStatic(request, response, pathname) {
   const target = PORTAL_PATHS.has(pathname.toLowerCase()) ? "index.html" : decodeURIComponent(pathname.slice(1));
   const topLevel = target.split(/[\\/]/)[0].toLowerCase();
   const lowerTarget = target.toLowerCase();
-  const privateFiles = new Set(["server.js", "course-data.js", "learngate.db", "learngate.db-shm", "learngate.db-wal"]);
+  const privateFiles = new Set(["server.js", "course-data.js", "learngate.db", "learngate.db-shm", "learngate.db-wal", "learngate-data.json", "learngate-data.json.tmp"]);
   if (privateFiles.has(lowerTarget) || lowerTarget.endsWith(".db") || lowerTarget.endsWith(".db-shm") || lowerTarget.endsWith(".db-wal")) {
     response.writeHead(403);
     response.end("Forbidden");
@@ -757,6 +776,10 @@ function serveStatic(request, response, pathname) {
 function createServer() {
   return http.createServer(async (request, response) => {
     const url = new URL(request.url, "http://localhost");
+    if (request.method === "GET" && url.pathname === "/health") {
+      sendJson(response, 200, { ok: true, service: "learngate" });
+      return;
+    }
     const handled = await handleApi(request, response, url.pathname);
     if (handled) return;
     serveStatic(request, response, url.pathname);
